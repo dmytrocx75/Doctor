@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="css/stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="css/questions.css">
+    <style type="text/css">
+        .crocodoc-page-text:before{display:none}        
+        h2 { font-family:"crocodoc-CxKQQ3-41"!important;}        
+    </style>
+    <script type="text/javascript" src="scripts/jquery-2.0.0.min.js"></script>
+</head>
+<body>
+<div class="crocodoc-HuDHOh crocodoc-CxKQQ3 crocodoc-page-text questionPage" style="width:1000pt; height:682pt;">
+    <h1>Thinking Critically: Drawing on Your Experience</h1>       
+    <h2><span>9.</span> What did you learn from implementing your course of action? What aspects were successful and what would you do <br />
+differently should you face a similar challenge?</h2>
+    <textarea id="aTxt_9"></textarea>
+
+    <h3>Thank you for sharing your experiences. Reflection is an integral part of the critical thinking <br />
+approach as it allows you to revise and improve your decision making process.</h3>
+    
+    <input class="btnSubmit" type="submit" />
+</div>
+</body>
+</html>
+
+<script type="text/javascript">
+
+    $(function () {
+        $(".btnSubmit").click(function () {
+            SubmitQuestions();
+        })
+    })
+    function GetValues() {
+        var obj = [];
+        obj.push({ 'question9': $("textarea#aTxt_9").val() });
+        arrJSON = JSON.stringify(obj);
+        return encodeURIComponent(arrJSON);
+    };
+
+    function RestoreState(JSONstring) {
+        var obj = $.parseJSON(decodeURIComponent(JSONstring));
+        $("textarea#aTxt_9").val(obj[0].question9);
+    }
+</script>

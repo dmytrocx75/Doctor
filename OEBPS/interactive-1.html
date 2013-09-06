@@ -1,0 +1,179 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; minimum-scale=1.0; user-scalable=0;">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link href="css/interactive.css" type="text/css" rel="stylesheet">
+    <script class="jsbin" src="scripts/jquery-2.0.0.min.js"></script>
+</head>
+<body>
+    <div class="frame" style="margin:0 auto;">
+        <div class="greenLine">
+            <h2 class="long">Long Term
+            </h2>
+            <h2 class="short">Short Term
+            </h2>
+            <div class="noteSticker-blue rotate-right" style="top: 333px; left: 174px">
+                Hire<br>
+                insurance<br>
+                person
+            </div>
+            <div class="noteSticker-yellow" style="top: 309px; left: 513px">
+                Hire office<br>
+                manager
+            </div>
+            <div class="noteSticker-yellow rotate-right" style="top: 344px; left: 276px">
+                Community<br>
+                wellness<br>
+                program
+            </div>
+            <div class="noteSticker-green rotate-left" style="top: 339px; left: 201px">
+                New scheduling<br>
+                software and<br>
+                training
+            </div>
+            <div class="noteSticker-yellow rotate-right" style="top: 312px; left: 252px">
+                Get an on-<br>
+                site lab
+            </div>
+            <div class="noteSticker-yellow rotate-left" style="top: 355px; left: 452px">
+                Advertise in<br>
+                different<br>
+                ways
+            </div>
+            <div class="noteSticker-green rotate-left" style="top: 368px; left: 227px">
+                Offer home<br>
+                health<br>
+                service
+            </div>
+            <div class="noteSticker-orange" style="top: 327px; left: 535px">
+                New waiting<br>
+                room<br>
+                furniture
+            </div>
+            <div class="noteSticker-blue rotate-left" style="top: 357px; left: 536px">
+                Take on<br>
+                another<br>
+                physician
+            </div>
+            <div class="noteSticker-blue rotate-right" style="top: 341px; left: 302px">
+                Partner with<br>
+                Sommers<br>
+                Physical<br>
+                Therapy 
+            </div>
+            <div class="noteSticker-orange" style="top: 327px; left: 394px">
+                Hire IT guy
+            </div>
+            <div class="noteSticker-orange rotate-left" style="top: 341px; left: 180px">
+                Massage<br>
+                and<br>
+                acupuncture
+            </div>
+            <div class="noteSticker-yellow rotate-left" style="top: 368px; left: 349px">
+                Accept<br>
+                Cigna
+            </div>
+            <div class="noteSticker-green" style="top: 340px; left: 470px">
+                Buy X-ray<br>
+                machine
+            </div>
+        </div>
+    </div>
+    <p class="notes" style="margin:0 auto;">
+        Drag and drop the stickies into either Long Term or Short Term
+    </p>
+</body>
+
+<script type="text/javascript">
+    $.fn.draggable = function () {
+        var offset = null;
+
+        var start = function (e) {
+            var orig = e.originalEvent;
+            var pos = $(this).position();
+            offset = {
+                x: orig.changedTouches[0].pageX - pos.left,
+                y: orig.changedTouches[0].pageY - pos.top
+            };
+        };
+
+        var moveMe = function (e) {
+            e.preventDefault();
+            var orig = e.originalEvent;
+            $(this).css({
+                top: orig.changedTouches[0].pageY - offset.y,
+                left: orig.changedTouches[0].pageX - offset.x
+            });
+        };
+
+        this.bind("touchstart", start);
+        this.bind("touchmove", moveMe);
+    };
+
+    $(".greenLine div").draggable();
+    
+    var gLineWidth = parseInt($(".greenLine").css("width"));
+    var gLineHeight = parseInt($(".greenLine").css("height"));
+    
+    var stickerWidth = parseInt($(".greenLine div").css("width"));
+    var stickerHeight = parseInt($(".greenLine div").css("height"));
+
+    function GetValues() {
+        var obj = {};
+
+        obj.left = [];
+        obj.right = [];
+        obj.unknown = [];
+
+        $(".greenLine div").each(function (index) {
+            var t = $(this);
+            var pos = t.position();
+
+            var tmpPosTop = pos.top + stickerHeight / 2;
+            var tmpPosLeft = pos.left + stickerWidth / 2;
+
+            var arr;
+
+            if (tmpPosTop < 0 || tmpPosTop > (gLineHeight - stickerHeight / 2) || tmpPosLeft < 0 || tmpPosLeft > gLineWidth) {
+                arr = obj.unknown;
+            } else if (tmpPosLeft < gLineWidth / 2) {
+                arr = obj.left;
+            } else {
+                arr = obj.right;
+            }
+
+            arr.push({ 'value': t.text(), 'top': t.css('top'), 'left': t.css('left') });
+        });
+
+        arrJSON = JSON.stringify(obj);
+        return encodeURIComponent(arrJSON);
+    };
+
+    function RestoreState(JSONstring) {
+        var obj = $.parseJSON(decodeURIComponent(JSONstring));
+
+        $.each(obj.left, function (index, value) {
+            FindAndRestoreSticker(value);
+        });
+
+        $.each(obj.right, function (index, value) {
+            FindAndRestoreSticker(value);
+        });
+
+        $.each(obj.unknown, function (index, value) {
+            FindAndRestoreSticker(value);
+        });
+    }
+
+    function FindAndRestoreSticker(data) {
+        $(".greenLine div").filter(function () {
+            var div = $(this);
+            if (div.text() == data.value) {
+                div.css('top', data.top);
+                div.css('left', data.left);
+            }
+        })
+    }
+</script>
+</html>

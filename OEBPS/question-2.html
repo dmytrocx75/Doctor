@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="css/stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="css/questions.css">
+    <style type="text/css">
+        .crocodoc-page-text:before{display:none}           
+        h2 {font-family: "crocodoc-e5Cmvk-41"!important;}
+    </style>
+    <script type="text/javascript" src="scripts/jquery-2.0.0.min.js"></script>
+</head>
+<body>
+<div class="crocodoc-HuDHOh crocodoc-page-text questionPage" style="width:1000pt; height:682pt;">
+    <h1>Thinking Critically: Drawing on Your Experience</h1>
+    
+    <h2><span>3.</span> List all the potential solutions you brainstormed and considered for addressing the problem or challenge before choosing the course <br />
+of action.</h2>
+    <textarea id="aTxt_3"></textarea>
+    
+    <h2><span>4.</span>Outline the criteria you used for evaluating the feasibility of potential solutions (e.g., time or budget constraints, <br />
+resource availability, etc).</h2>
+    <textarea id="aTxt_4"></textarea>
+</div>
+</body>
+</html>
+
+<script type="text/javascript">
+    function GetValues() {
+        var obj = [];
+        obj.push({ 'question3': $("textarea#aTxt_3").val(), 'question4': $("textarea#aTxt_4").val() });
+        arrJSON = JSON.stringify(obj);
+        return encodeURIComponent(arrJSON);
+    };
+
+    function RestoreState(JSONstring) {
+        var obj = $.parseJSON(decodeURIComponent(JSONstring));
+        $("textarea#aTxt_3").val(obj[0].question3);
+        $("textarea#aTxt_4").val(obj[0].question4);
+    }
+</script>

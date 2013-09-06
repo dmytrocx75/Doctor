@@ -1,0 +1,238 @@
+﻿<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; minimum-scale=1.0; user-scalable=0;">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<link href="css/interactive.css" type="text/css" rel="stylesheet">
+        <script type="text/javascript" src="scripts/jquery-2.0.0.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("input").keydown(function (event) {
+                    // Allow: backspace, delete, tab, escape, and enter
+                    if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+                        // Allow: Ctrl+A
+                        (event.keyCode == 65 && event.ctrlKey === true) ||
+                        // Allow: home, end, left, right
+                        (event.keyCode >= 35 && event.keyCode <= 39)) {
+                        // let it happen, don't do anything
+                        return;
+                    }
+                    else {
+                        // Ensure that it is a number and stop the keypress
+                        if (parseInt(event.target.value) > 1 || event.shiftKey || (parseInt(event.target.value) == 1 && event.keyCode > 48) || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)) {
+                            event.preventDefault();
+                        }
+                    }
+                });
+            });
+
+            $(function(){
+                $(".Change").change(function () {
+                    var score = "."+$(this).attr("data-score");
+                    var ratins = "." +$(this).attr("data-ratins");
+                    var weight = "." + $(this).attr("data-weight");
+
+                    var elR=0, elW=0;
+                    if ($(ratins).val() != "") elR = $(ratins).val();
+                    if ($(weight).val() != "") elW = $(weight).val();
+                    var r = parseInt(elR) * parseInt(elW);
+                    if (isNaN(r)) r ="NA";
+                    $(score).text(r);
+                    ScoreY($(score).attr("data-scoreY"));                    
+                })
+                
+                function ScoreY(score) {
+                    var r = 0;
+                    var el;
+                    $("span[data-scoreY='" + score + "']").each(function () {
+                        el = 0;
+                        if ($(this).text() != "") el = parseInt($(this).text());
+                        r = r + el; 
+                    });
+                    if (isNaN(r)) r = "NA";
+                    $("." + score).text(r);
+                }
+            })
+
+            function GetValues() {
+                var obj = {};
+                
+                obj.effective = [];
+                obj.implement = [];
+                obj.adversely = [];
+                obj.positive = [];
+                obj.totalScore = [];
+
+                var solutions = $(".Color td.sol");
+
+                var count = solutions.length;
+
+                var effectiveInputs = $(".Effective");
+                var implementInputs = $(".Implement");
+                var adverselyInputs = $(".adversely");
+                var positiveInputs = $(".positive");
+                var totalScoreVal = $(".TotalScore");
+
+                for (var i = 1; i <= count; i++) {
+                    obj.effective.push({ 'Solution': $.text(solutions[i - 1]), 'Weight': effectiveInputs.find("input#ef_w" + i).val(), 'Ratins': effectiveInputs.find("input#ef_r" + i).val(), 'Score': effectiveInputs.find("span#ef_s" + i).text() });
+                    obj.implement.push({ 'Solution': $.text(solutions[i - 1]), 'Weight': implementInputs.find("input#im_w" + i).val(), 'Ratins': implementInputs.find("input#im_r" + i).val(), 'Score': implementInputs.find("span#im_s" + i).text() });
+                    obj.adversely.push({ 'Solution': $.text(solutions[i - 1]), 'Weight': adverselyInputs.find("input#ad_w" + i).val(), 'Ratins': adverselyInputs.find("input#ad_r" + i).val(), 'Score': adverselyInputs.find("span#ad_s" + i).text() });
+                    obj.positive.push({ 'Solution': $.text(solutions[i - 1]), 'Weight': positiveInputs.find("input#po_w" + i).val(), 'Ratins': positiveInputs.find("input#po_r" + i).val(), 'Score': positiveInputs.find("span#po_s" + i).text() });
+                    obj.totalScore.push({ 'Solution': $.text(solutions[i - 1]), 'TotalScore': totalScoreVal.find("span#tScore_" + i).text() });
+                }
+
+                arrJSON = JSON.stringify(obj);
+                return encodeURIComponent(arrJSON);
+            };
+
+            function RestoreState(JSONstring) {
+                var obj = $.parseJSON(decodeURIComponent(JSONstring));
+                var solutions = $(".Color td.sol");
+
+                var count = solutions.length;
+
+                var effectiveInputs = $(".Effective");
+                var implementInputs = $(".Implement");
+                var adverselyInputs = $(".adversely");
+                var positiveInputs = $(".positive");
+                var totalScoreVal = $(".TotalScore");
+                                          
+                for (var i = 1; i <= count; i++) {
+                    $.each(obj.effective, function (index, value) {
+                        if (value.Solution == $.text(solutions[i - 1])) {
+                            effectiveInputs.find("input#ef_w" + i).val(value.Weight);
+                            effectiveInputs.find("input#ef_r" + i).val(value.Ratins);
+                            effectiveInputs.find("span#ef_s" + i).text(value.Score);
+                        }
+                    });
+                    $.each(obj.implement, function (index, value) {
+                        if (value.Solution == $.text(solutions[i - 1])) {
+                            implementInputs.find("input#im_w" + i).val(value.Weight);
+                            implementInputs.find("input#im_r" + i).val(value.Ratins);
+                            implementInputs.find("span#im_s" + i).text(value.Score);
+                        }
+                    });
+                    $.each(obj.adversely, function (index, value) {
+                        if (value.Solution == $.text(solutions[i - 1])) {
+                            adverselyInputs.find("input#ad_w" + i).val(value.Weight);
+                            adverselyInputs.find("input#ad_r" + i).val(value.Ratins);
+                            adverselyInputs.find("span#ad_s" + i).text(value.Score);
+                        }
+                    });
+                    $.each(obj.positive, function (index, value) {
+                        if (value.Solution == $.text(solutions[i - 1])) {
+                            positiveInputs.find("input#po_w" + i).val(value.Weight);
+                            positiveInputs.find("input#po_r" + i).val(value.Ratins);
+                            positiveInputs.find("span#po_s" + i).text(value.Score);
+                        }
+                    });
+                    $.each(obj.totalScore, function (index, value) {
+                        if (value.Solution == $.text(solutions[i - 1])) {
+                            totalScoreVal.find("span#tScore_" + i).text(value.TotalScore);
+                        }
+                    });
+                }
+            }
+        </script>
+	</head>
+	<body>
+		<div class="Noframe">
+
+            <div class="Grid1">
+                <h1>Decision Analysis</h1>
+                <div class="Text">
+                    <p>Objective:Implement a stratesy for bvildins competitive advantase over the new medical center within budset and time constraints</p>
+                </div>        
+            
+                <div>
+                    <table>
+                        <tr class="Color">
+                            <td class="width1">Potential Solutions</td>
+                            <td class="width2 sol" colspan="3">New schedulins <br /> software and trainins </td>
+                            <td class="width3 sol" colspan="3">Advertise in  <br /> different ways</td>
+                            <td class="width4 sol" colspan="3">Massage and <br /> acupunture</td>                            
+                        </tr>
+                        <tr class="Color">
+                            <td class="First" rowspan="2">Success Factors</td>
+                            <td colspan="9" class="Center">Scorins</td>
+                        </tr>
+                        <tr class="Color Center">
+                            <td>Weight</td>
+                            <td>Ratins</td>
+                            <td>Score</td>
+                            <td>Weight</td>
+                            <td>Ratins</td>
+                            <td>Score</td>
+                            <td>Weight</td>
+                            <td>Ratins</td>
+                            <td>Score</td>                            
+                        </tr>
+                        <tr class="Effective">
+                            <td class="First">Cost Effective</td>                            
+                            <td><input type="tel" data-score="Score1" data-ratins="Ratins1" data-weight="Weight1" class="Change Weight1" id="ef_w1" /></td>
+                            <td><input type="tel" data-score="Score1" data-ratins="Ratins1" data-weight="Weight1" class="Change Ratins1" id="ef_r1" /></td>
+                            <td><span data-score="Score1" data-scoreY="ScoreY1" class="Score Score1" id="ef_s1"></span></td>                             
+                            <td><input type="tel" data-score="Score2" data-ratins="Ratins2" data-weight="Weight2" class="Change Weight2" id="ef_w2" /></td>
+                            <td><input type="tel" data-score="Score2" data-ratins="Ratins2" data-weight="Weight2" class="Change Ratins2" id="ef_r2" /></td>
+                            <td><span data-score="Score2" data-scoreY="ScoreY2" class="Score Score2" id="ef_s2"></span></td>                             
+                            <td><input type="tel" data-score="Score3" data-ratins="Ratins3" data-weight="Weight3" class="Change Weight3" id="ef_w3" /></td>
+                            <td><input type="tel" data-score="Score3" data-ratins="Ratins3" data-weight="Weight3" class="Change Ratins3" id="ef_r3" /></td>
+                            <td><span data-score="Score3" data-scoreY="ScoreY3" class="Score Score3" id="ef_s3"></span></td>
+                        </tr>
+                        <tr class="Implement">
+                            <td class="First">Time to Implement</td>                            
+                            <td><input type="tel" data-score="Score4" data-ratins="Ratins4" data-weight="Weight4" class="Change Weight4" id="im_w1" /></td>
+                            <td><input type="tel" data-score="Score4" data-ratins="Ratins4" data-weight="Weight4" class="Change Ratins4" id="im_r1" /></td>
+                            <td><span data-score="Score4" data-scoreY="ScoreY1" class="Score Score4" id="im_s1"></span></td>                             
+                            <td><input type="tel" data-score="Score5" data-ratins="Ratins5" data-weight="Weight5" class="Change Weight5" id="im_w2" /></td>
+                            <td><input type="tel" data-score="Score5" data-ratins="Ratins5" data-weight="Weight5" class="Change Ratins5" id="im_r2" /></td>
+                            <td><span data-score="Score5" data-scoreY="ScoreY2" class="Score Score5" id="im_s2"></span></td>                             
+                            <td><input type="tel" data-score="Score6" data-ratins="Ratins6" data-weight="Weight6" class="Change Weight6" id="im_w3" /></td>
+                            <td><input type="tel" data-score="Score6" data-ratins="Ratins6" data-weight="Weight6" class="Change Ratins6" id="im_r3" /></td>
+                            <td><span data-score="Score6" data-scoreY="ScoreY3" class="Score Score6" id="im_s3"></span></td>
+                        </tr>
+                        <tr class="adversely">
+                            <td class="First">Must not adversely affect <br /> quality of Service</td>                            
+                            <td><input type="tel" data-score="Score7" data-ratins="Ratins7" data-weight="Weight7" class="Change Weight7 col1" id="ad_w1" /></td>
+                            <td><input type="tel" data-score="Score7" data-ratins="Ratins7" data-weight="Weight7" class="Change Ratins7 col1" id="ad_r1" /></td>
+                            <td><span data-score="Score7" data-scoreY="ScoreY1" class="Score Score7" id="ad_s1"></span></td>                                  
+                            <td><input type="tel" data-score="Score8" data-ratins="Ratins8" data-weight="Weight8" class="Change Weight8 col2" id="ad_w2" /></td>
+                            <td><input type="tel" data-score="Score8" data-ratins="Ratins8" data-weight="Weight8" class="Change Ratins8 col2" id="ad_r2" /></td>
+                            <td><span data-score="Score8" data-scoreY="ScoreY2" class="Score Score8" id="ad_s2"></span></td>                                  
+                            <td><input type="tel" data-score="Score9" data-ratins="Ratins9" data-weight="Weight9" class="Change Weight9 col3" id="ad_w3" /></td>
+                            <td><input type="tel" data-score="Score9" data-ratins="Ratins9" data-weight="Weight9" class="Change Ratins9 col3" id="ad_r3" /></td>
+                            <td><span data-score="Score9" data-scoreY="ScoreY3" class="Score Score9" id="ad_s3"></span></td>
+                        </tr>
+                        <tr class="positive">
+                            <td class="First">Must have positive impact on <br />the majority of patients</td>                            
+                            <td><input type="tel" data-score="Score10" data-ratins="Ratins10" data-weight="Weight10" class="Change Weight10 col1" id="po_w1" /></td>
+                            <td><input type="tel" data-score="Score10" data-ratins="Ratins10" data-weight="Weight10" class="Change Ratins10 col1" id="po_r1" /></td>
+                            <td><span data-score="Score10" data-scoreY="ScoreY1" class="Score Score10" id="po_s1"></span></td>                                    
+                            <td><input type="tel" data-score="Score11" data-ratins="Ratins11" data-weight="Weight11" class="Change Weight11 col2" id="po_w2" /></td>
+                            <td><input type="tel" data-score="Score11" data-ratins="Ratins11" data-weight="Weight11" class="Change Ratins11 col2" id="po_r2" /></td>
+                            <td><span data-score="Score11" data-scoreY="ScoreY2" class="Score Score11" id="po_s2"></span></td>                                    
+                            <td><input type="tel" data-score="Score12" data-ratins="Ratins12" data-weight="Weight12" class="Change Weight12 col3" id="po_w3" /></td>
+                            <td><input type="tel" data-score="Score12" data-ratins="Ratins12" data-weight="Weight12" class="Change Ratins12 col3" id="po_r3" /></td>
+                            <td><span data-score="Score12" data-scoreY="ScoreY3" class="Score Score12" id="po_s3"></span></td>
+                        </tr>
+                        <tr class="TotalScore">
+                            <td class="First Total">Total Score</td>                            
+                            <td></td>
+                            <td></td>
+                            <td><span data-score1="Score1" data-score2="Score4" data-score3="Score7" data-score4="Score10" class="Score ScoreY1" id="tScore_1"></span></td>
+                            <td></td>
+                            <td></td>
+                            <td><span data-score1="Score2" data-score2="Score5" data-score3="Score8" data-score4="Score11" class="Score ScoreY2" id="tScore_2"></span></td>
+                            <td></td>
+                            <td></td>
+                            <td><span data-score1="Score3" data-score2="Score6" data-score3="Score9" data-score4="Score12" class="Score ScoreY3" id="tScore_3"></span></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>             
+		</div>		
+        <p class="notes">			        
+			Tap to enter a value between 1 and 10 In the Weight and Rating columns
+		</p>	
+	</body>
+</html>
