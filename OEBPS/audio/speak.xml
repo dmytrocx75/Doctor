@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<playItemList>
-<playItem id="page1" ebookPage="text-4.html" soundLife="page1.mp3" startTime="0" stopTime="999" />
-<playItem id="page2" ebookPage="text-5.html" soundLife="page2.mp3" startTime="0" stopTime="999" />
-<playItem id="page3" ebookPage="text-6.html" soundLife="page3.mp3" startTime="3" stopTime="8" />
-</playItemList>
- 
